@@ -50,7 +50,12 @@ CONFIG_FILE_NAME = "GnuChanFetch.py"
 
 # The logo the settings script points at. It is installed beside the script so
 # the default Image path resolves without anything else being configured.
-LOGO_SOURCE = ROOT.parent.parent / "assets" / "logo.png"
+#
+# It is kept in this repository's own assets/ and committed here, because a
+# build must not reach outside its own repository for a file it needs. The copy
+# is the GnuchanOS logo; the GnuchanOS repository carries the same picture for
+# the themes and the image build.
+LOGO_SOURCE = ROOT.parent / "assets" / "logo.png"
 LOGO_FILE_NAME = "logo.png"
 
 SOURCES = (
@@ -304,9 +309,10 @@ def install_config() -> None:
         pass
     detail(f"installed {script}")
 
-    # The logo, if the repository has one. A machine with no logo still works —
-    # the program prints the facts on their own — but the shipped desktop has
-    # one, and the script points at it by this name.
+    # The logo this repository ships, installed beside the script because the
+    # script's own default Image path names it. A machine with no logo still
+    # works - the facts are printed on their own - so a missing file is
+    # reported rather than fatal.
     if LOGO_SOURCE.is_file():
         logo = directory / LOGO_FILE_NAME
         shutil.copyfile(LOGO_SOURCE, logo)
@@ -316,7 +322,7 @@ def install_config() -> None:
             pass
         detail(f"installed {logo}")
     else:
-        detail(f"no logo at {LOGO_SOURCE}; the facts are printed on their own")
+        detail(f"no {LOGO_SOURCE}; the facts are printed on their own")
 
     try:
         os.chown(directory, uid, gid)
