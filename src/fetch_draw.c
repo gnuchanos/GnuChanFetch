@@ -261,10 +261,13 @@ static void draw_with_graphics(const FetchConfig *config,
         /* Back to the block's left edge, then down one row, so the next line
            starts at the same column however long this one was. */
         fputs("\r", stdout);
-        fputs("\033[1B", stdout);
+        /* IND advances like a line feed and scrolls at the bottom edge.
+           CSI 1 B only clamps the cursor there, which clips tall output and
+           leaves the shell prompt on top of the fetch block. */
+        fputs("\033D", stdout);
     }
-    /* The cursor ends below the whole block, so a shell prompt after the fetch
-       does not land over the picture. */
+    /* Leave a clear line between the block and the shell prompt. */
+    fputs("\033D", stdout);
     fputs(RESET, stdout);
 }
 
@@ -349,4 +352,5 @@ void fetch_draw(const FetchConfig *config, const FetchImage *image,
         }
         putchar('\n');
     }
+    putchar('\n');
 }
