@@ -1,9 +1,8 @@
 /*
- * fetch_config.c — the walk that gives the settings script its meaning.
+ * fetch_config.c — apply parsed settings values to the fetch configuration.
  *
- * fetch_parser.c reads the file as a name and a value, or a name and a call.
- * This is the other half: it knows which call a fetch program understands and
- * what each of its arguments means.
+ * fetch_parser.c reads plain assignments and safe legacy call syntax. This is
+ * the other half: it knows which values a fetch program understands.
  *
  * The one call it understands, whole:
  *
@@ -29,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "fetch_config.h"
 #include "fetch_parser.h"
@@ -177,12 +177,12 @@ static void read_main(FetchConfig *config, const FetchStatement *statement) {
 char *fetch_config_path(char *buffer, unsigned int size) {
     const char *xdg = getenv("XDG_CONFIG_HOME");
     if (xdg && xdg[0]) {
-        snprintf(buffer, size, "%s/GnuChanFetch/GnuChanFetch.py", xdg);
+        snprintf(buffer, size, "%s/GnuChanFetch/GnuChanFetch.conf", xdg);
         return buffer;
     }
     const char *home = getenv("HOME");
     if (home && home[0]) {
-        snprintf(buffer, size, "%s/.config/GnuChanFetch/GnuChanFetch.py", home);
+        snprintf(buffer, size, "%s/.config/GnuChanFetch/GnuChanFetch.conf", home);
         return buffer;
     }
     /* No home and no XDG directory: there is nowhere to look, and the caller
@@ -215,6 +215,14 @@ int fetch_config_load(FetchConfig *config, const char *path) {
         if (statements[i].kind == FETCH_STMT_CALL &&
             strcmp(statements[i].target, "gcl_Fetch.Main") == 0) {
             read_main(config, &statements[i]);
+        } else if (statements[i].kind == FETCH_STMT_ASSIGN) {
+            FetchStatement flat = {0};
+            flat.kind = FETCH_STMT_CALL;
+            flat.arg_count = 1;
+            snprintf(flat.args[0].name, sizeof(flat.args[0].name), "%s",
+                     statements[i].target);
+            flat.args[0].value = statements[i].value;
+            read_main(config, &flat);
         }
         /* Every other statement is a name or a call this program does not act
            on. It is left alone: a script is lived in, and not every name in it
@@ -230,6 +238,17 @@ int fetch_config_load_default(FetchConfig *config) {
     if (!path[0]) {
         fetch_config_defaults(config);
         return -1;
+    }
+    if (access(path, R_OK) != 0) {
+        char legacy[FETCH_TEXT_LENGTH];
+        snprintf(legacy, sizeof(legacy), "%s", path);
+        char *suffix = strrchr(legacy, '.');
+        if (suffix && strcmp(suffix, ".conf") == 0) {
+            strcpy(suffix, ".py");
+            if (access(legacy, R_OK) == 0) {
+                snprintf(path, sizeof(path), "%s", legacy);
+            }
+        }
     }
     if (fetch_config_load(config, path) != 0) {
         /* No file, or a file that could not be read: the defaults are what the

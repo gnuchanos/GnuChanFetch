@@ -18,8 +18,11 @@ configured image size.
 
 The makefile installs the build dependency with apt-get, compiles the sources,
 and re-runs itself through sudo to write into `/usr/local/bin`. The binary goes
-to `/usr/local/bin/GnuChanFetch`; the settings script and the logo go under
-`~/.config/GnuChanFetch/`, beside the script that reads them.
+to `/usr/local/bin/GnuChanFetch`; `GnuChanFetch.conf` and the logo go under
+`~/.config/GnuChanFetch/`. The settings file uses plain `Key = value` lines,
+like GnuChanSettings' `system.conf`. Existing `GnuChanFetch.py` settings are
+read by a restricted static parser when no `.conf` exists; they are never
+executed.
 
 The makefile takes an action as its first argument: `install` (the default),
 `build`, `run` and `uninstall`.

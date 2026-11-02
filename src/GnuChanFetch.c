@@ -4,7 +4,7 @@
  * GnuChanFetch is a small program in the shape of neofetch: it prints a short
  * set of facts about the machine it is run on, with the GnuchanOS logo drawn
  * beside them. It is configured by a script — see fetch_config.h for the shape,
- * and GnuChanFetch_config/GnuChanFetch.py for the file that ships — and it is a
+ * and GnuChanFetch_config/GnuChanFetch.conf for the file that ships — and it is a
  * C program, not a shell script, so it does the reading itself rather than
  * calling out to uname, free and dpkg for answers a file already holds.
  *
@@ -87,7 +87,7 @@ static void print_help(void) {
     printf("  %s --version    the version\n", PROGRAM_NAME);
     printf("\n");
     printf("The settings are read from\n");
-    printf("  ~/.config/GnuChanFetch/GnuChanFetch.py\n");
+    printf("  ~/.config/GnuChanFetch/GnuChanFetch.conf\n");
     printf("and every value has a default, so the program runs whether or\n");
     printf("not that file is there. The picture it draws is the one that\n");
     printf("file names with Image=, \".png\" by default.\n");

@@ -1,13 +1,11 @@
 /*
  * fetch_config.h — the settings GnuChanFetch is built from.
  *
- * GnuChanFetch is configured by a script, not by a file of key = value pairs,
- * the same way GnuChanWM, GnuChanSS and GnuChanTerm are: the same file a person
- * would write to pick the picture, the fields, and the colours. That script is
- * Python, and this header is the shape of what running it produces — the small,
- * fixed set of things a fetch program can be asked for.
+ * GnuChanFetch is configured by a plain Key = value file. Older static call
+ * syntax is parsed without execution for compatibility. This header is the
+ * small, fixed set of values a fetch program can be asked for.
  *
- * Everything here is plain data. The script is read by fetch_parser.c, walked
+ * Everything here is plain data. The file is read by fetch_parser.c, walked
  * by fetch_config.c, and drawn and printed by GnuChanFetch.c and fetch_image.c.
  * Nothing in this header knows about a terminal or a picture.
  */
@@ -18,7 +16,7 @@
    and shared by the parser and the config so one length governs both. */
 #define FETCH_TEXT_LENGTH 256
 
-/* The most fields a script may ask to be shown, and the most colours its swatch
+/* The most fields a file may ask to be shown, and the most colours its swatch
    line may hold. Both are far above what a person writes, and both exist so a
    malformed file cannot make the walker write past its arrays. */
 #define FETCH_MAX_FIELDS  32
@@ -57,7 +55,7 @@ typedef struct FetchConfig {
     char error[FETCH_TEXT_LENGTH * 2];
 } FetchConfig;
 
-/* The settings a machine with no script gets: the logo in the usual place and
+/* The settings a machine with no file gets: the logo in the usual place and
    the fields a fetch program is expected to show. */
 void fetch_config_defaults(FetchConfig *config);
 
@@ -70,8 +68,8 @@ int fetch_config_load(FetchConfig *config, const char *path);
    file. Always leaves a usable config. Returns 0 when a file was read. */
 int fetch_config_load_default(FetchConfig *config);
 
-/* Where the script is looked for: $XDG_CONFIG_HOME/GnuChanFetch/GnuChanFetch.py,
-   or ~/.config/GnuChanFetch/GnuChanFetch.py. Written into buffer, returned. */
+/* Where settings are looked for: $XDG_CONFIG_HOME/GnuChanFetch/GnuChanFetch.conf,
+   or ~/.config/GnuChanFetch/GnuChanFetch.conf. */
 char *fetch_config_path(char *buffer, unsigned int size);
 
 #endif /* GNUCHANFETCH_CONFIG_H */

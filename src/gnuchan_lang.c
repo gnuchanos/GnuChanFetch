@@ -307,7 +307,7 @@ static const struct tr_entry tr_table[] = {
 
     /* --- GnuChanTerm --- */
     TR("term_name", "gcl-256color", "gcl-256color"),
-    TR("term_cannot_start_shell", "cannot start a shell", "kabuk başlatılamadı"),
+    TR("term_cannot_start_shell", "cannot start a shell", "shell başlatılamadı"),
     TR("term_too_many_modules", "too many modules", "fazla modül"),
     TR("term_cannot_open_display",
        "cannot open a display", "bir ekran açılamadı"),

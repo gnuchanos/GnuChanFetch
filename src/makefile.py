@@ -44,9 +44,9 @@ BIN_DIR = Path("/usr/local/bin")
 # The settings script, installed into the user's own config directory, beside
 # the logo. It is replaced on every install: the installer owns that file, and a
 # machine installing a new build has to get the settings that build ships with.
-CONFIG_SOURCE = ROOT / "GnuChanFetch_config" / "GnuChanFetch.py"
+CONFIG_SOURCE = ROOT / "GnuChanFetch_config" / "GnuChanFetch.conf"
 CONFIG_DIR_NAME = "GnuChanFetch"
-CONFIG_FILE_NAME = "GnuChanFetch.py"
+CONFIG_FILE_NAME = "GnuChanFetch.conf"
 
 # The logo the settings script points at. It is installed beside the script so
 # the default Image path resolves without anything else being configured.
@@ -302,15 +302,18 @@ def install_config() -> None:
         )
 
     script = directory / CONFIG_FILE_NAME
+    legacy = directory / "GnuChanFetch.py"
     if script.exists():
-        script.unlink()
-        detail(f"removed the old {script}")
-    shutil.copyfile(CONFIG_SOURCE, script)
-    try:
-        os.chown(script, uid, gid)
-    except OSError:
-        pass
-    detail(f"installed {script}")
+        detail(f"kept existing settings {script}")
+    elif legacy.exists():
+        detail(f"kept legacy settings {legacy}; the program reads it safely")
+    else:
+        shutil.copyfile(CONFIG_SOURCE, script)
+        try:
+            os.chown(script, uid, gid)
+        except OSError:
+            pass
+        detail(f"installed {script}")
 
     # The logo this repository ships, installed beside the script because the
     # script's own default Image path names it. A machine with no logo still
