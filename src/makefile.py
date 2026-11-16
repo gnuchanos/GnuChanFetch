@@ -44,7 +44,7 @@ BIN_DIR = Path("/usr/local/bin")
 # The settings script, installed into the user's own config directory, beside
 # the logo. It is replaced on every install: the installer owns that file, and a
 # machine installing a new build has to get the settings that build ships with.
-CONFIG_SOURCE = ROOT / "GnuChanFetch_config" / "GnuChanFetch.conf"
+CONFIG_SOURCE = ROOT / "config" / "config.conf"
 CONFIG_DIR_NAME = "GnuChanFetch"
 CONFIG_FILE_NAME = "GnuChanFetch.conf"
 
